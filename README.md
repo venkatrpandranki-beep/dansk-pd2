@@ -1,66 +1,57 @@
-# Dansk PD2 App — iPhone PWA Setup Guide
+# Dansk PD2 App — iPhone PWA Setup (Netlify)
 
-## What you have
-- `index.html` — the full app
+## Files
+- `index.html` — full app (no API key inside — safe to share publicly)
 - `manifest.json` — PWA config
-- `sw.js` — service worker (offline support)
+- `sw.js` — service worker
 - `icon-192.png` / `icon-512.png` — app icons
+- `netlify.toml` — Netlify config
+- `netlify/functions/chat.js` — secure API proxy (key never in browser)
 
-## Step 1: Get a free GitHub account
-Go to https://github.com and sign up (free).
+---
 
-## Step 2: Create a new repository
-1. Click the **+** button → "New repository"
-2. Name it: `dansk-pd2`
-3. Set to **Public**
-4. Check "Add a README file"
-5. Click "Create repository"
+## Step 1: Revoke your old API key (URGENT if exposed)
+Go to https://console.anthropic.com → API Keys → Delete the exposed key → Create a new one
 
-## Step 3: Upload your files
-1. In your new repo, click "Add file" → "Upload files"
-2. Upload ALL 5 files:
-   - index.html
-   - manifest.json
-   - sw.js
-   - icon-192.png
-   - icon-512.png
-3. Click "Commit changes"
+## Step 2: Push code to GitHub (key is NOT in the code — safe)
+1. Go to https://github.com → New repository → name: `dansk-pd2` → Public → Create
+2. Upload ALL files including the `netlify/` folder and `netlify.toml`
+3. Commit
 
-## Step 4: Enable GitHub Pages
-1. Go to repo **Settings** → **Pages** (left sidebar)
-2. Under "Source" → select **main** branch → **/ (root)**
-3. Click **Save**
-4. Wait 2 minutes — your URL will be:
-   `https://YOUR-USERNAME.github.io/dansk-pd2/`
+## Step 3: Deploy to Netlify (free)
+1. Go to https://netlify.com → Sign up free (use GitHub login)
+2. Click "Add new site" → "Import an existing project" → GitHub
+3. Select your `dansk-pd2` repo
+4. Build settings: leave blank (static site)
+5. Click "Deploy site"
+6. Netlify gives you a URL like `https://your-site-name.netlify.app`
 
-## Step 5: Add API Key (for AI Tutor)
-1. Go to https://console.anthropic.com
-2. Create an API key (free tier available)
-3. In index.html, find this line near the top:
-   `const API_KEY = "YOUR_ANTHROPIC_API_KEY_HERE";`
-4. Replace with your actual key
-5. Re-upload index.html to GitHub
+## Step 4: Add API key securely in Netlify
+1. In Netlify dashboard → your site → **Site configuration** → **Environment variables**
+2. Click "Add a variable"
+3. Key: `ANTHROPIC_API_KEY`
+4. Value: your new Anthropic API key (from console.anthropic.com)
+5. Click Save → then **Trigger deploy** (Deploys tab → Trigger deploy)
 
-## Step 6: Install on iPhone
-1. Open Safari on your iPhone
-2. Go to your GitHub Pages URL
-3. Tap the **Share** button (box with arrow) at the bottom
-4. Scroll down and tap **"Add to Home Screen"**
+The key now lives only on Netlify's servers. It is NEVER in your HTML. GitHub can scan forever and find nothing.
+
+## Step 5: Install on iPhone
+1. Open **Safari** on iPhone
+2. Go to your Netlify URL (e.g. `https://dansk-pd2.netlify.app`)
+3. Tap the **Share** button (box with arrow at bottom)
+4. Tap **"Add to Home Screen"**
 5. Tap **"Add"**
 
-Done! The app now appears on your home screen like a real app — full screen, no browser bar.
+Done! Full-screen app on your home screen.
 
-## Features
-- 📚 Daily vocabulary flashcards with flip animation
-- 🔊 Hear Danish pronunciation (tap the speaker button)
-- 🎤 Speak and get feedback (tap the mic button — uses da-DK recognition)
-- 🔤 Grammar lessons with examples
-- ✏️ Quiz after each lesson
-- 📊 Progress tracking & streak counter
-- 🤖 AI Tutor (needs internet, powered by Claude)
-- 16 lessons cycling daily through your 1-year plan
+---
+
+## Why this is secure
+- `index.html` calls `/.netlify/functions/chat` (your own server)
+- The Netlify function calls Anthropic with the key from environment variable
+- The key never travels to the browser — not in HTML, not in JavaScript
+- GitHub sees zero secrets
 
 ## Pronunciation note
-Speech recognition (🎤) works best in Chrome.
-On iPhone Safari, mic works but recognition quality varies.
-For best results: use Chrome on Android or desktop for pronunciation practice.
+Speech mic (🎤) works best in Chrome.
+On iPhone Safari it works but quality varies — go to Settings → Safari → Microphone → Allow.

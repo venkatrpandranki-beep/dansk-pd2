@@ -31,7 +31,7 @@ input{font-family:inherit}
 // ═══════════════════════════════════════════════════════
 // CONFIG
 // ═══════════════════════════════════════════════════════
-const API_KEY = "ADD KEY HERE"; // ← REPLACE THIS
+// No API key here — key lives securely in Netlify environment variables
 
 // ═══════════════════════════════════════════════════════
 // LESSONS
@@ -370,9 +370,9 @@ Today's lesson: "${lesson.title}". Vocab: ${lesson.vocab.map(v=>v.da+"("+v.en+")
 Rules: under 200 words · pronunciation in [brackets] after new words · compare to Hindi/Telugu when helpful · be encouraging`,
     messages: chatHistory
   };
+  // Calls our Netlify function — API key stored securely server-side, never in this file
   const headers = {"Content-Type":"application/json"};
-  if (API_KEY && API_KEY !== "YOUR_ANTHROPIC_API_KEY_HERE") headers["x-api-key"] = API_KEY;
-  const res = await fetch("https://api.anthropic.com/v1/messages", {method:"POST", headers, body:JSON.stringify(body)});
+  const res = await fetch("/.netlify/functions/chat", {method:"POST", headers, body:JSON.stringify(body)});
   if (!res.ok) { const e=await res.json().catch(()=>{}); throw new Error(e?.error?.message||"HTTP "+res.status); }
   const data = await res.json();
   const reply = data.content?.find(c=>c.type==="text")?.text || "No response";
