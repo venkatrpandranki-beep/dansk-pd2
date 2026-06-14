@@ -1,0 +1,939 @@
+<!DOCTYPE html>
+<html lang="da">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"/>
+<meta name="apple-mobile-web-app-capable" content="yes"/>
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"/>
+<meta name="apple-mobile-web-app-title" content="Dansk PD2"/>
+<meta name="theme-color" content="#0F2A3A"/>
+<link rel="manifest" href="manifest.json"/>
+<link rel="apple-touch-icon" href="icon-192.png"/>
+<title>Dansk PD2 Prep</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:#F4F2ED;min-height:100vh;max-width:500px;margin:0 auto;padding-bottom:env(safe-area-inset-bottom)}
+button{font-family:inherit;cursor:pointer}
+input{font-family:inherit}
+.card{background:white;border-radius:14px;padding:14px;border:1px solid #E8E4DC;margin-bottom:12px}
+.btn-primary{width:100%;padding:14px;background:#0F2A3A;color:white;border:none;border-radius:11px;font-size:15px;font-weight:700}
+.btn-primary:active{opacity:0.85}
+.tag{display:inline-block;padding:3px 11px;border-radius:20px;font-size:12px;font-weight:700}
+@keyframes pulse{0%,100%{transform:scale(1)}50%{transform:scale(1.12)}}
+@keyframes fadeIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
+.fade{animation:fadeIn 0.25s ease}
+</style>
+</head>
+<body>
+<div id="app"></div>
+
+<script>
+// ═══════════════════════════════════════════════════════
+// CONFIG
+// ═══════════════════════════════════════════════════════
+const API_KEY = "YOUR_ANTHROPIC_API_KEY_HERE"; // ← REPLACE THIS
+
+// ═══════════════════════════════════════════════════════
+// LESSONS
+// ═══════════════════════════════════════════════════════
+const LESSONS = [
+  {week:1,day:1,title:"Hej! First Words",
+   vocab:[
+    {da:"Hej",pron:"Hi",en:"Hello / Hi",hint:"Same sound as English 'Hi'!"},
+    {da:"Godmorgen",pron:"go-MOR-en",en:"Good morning",hint:"God = good, morgen = morning"},
+    {da:"Godaften",pron:"go-AF-ten",en:"Good evening",hint:"Aften = evening"},
+    {da:"Farvel",pron:"far-VEL",en:"Goodbye",hint:"Far = travel, vel = well"},
+    {da:"Tak",pron:"tack",en:"Thank you",hint:"Short & sharp — like English 'tack'"},
+    {da:"Undskyld",pron:"OON-skyul",en:"Excuse me / Sorry",hint:"Very useful daily word"},
+    {da:"Ja / Nej",pron:"ya / ny",en:"Yes / No",hint:"Ja like Hindi हाँ, Nej rhymes with 'my'"},
+   ],
+   grammar:{title:"Danish uses A–Z plus 3 special letters",
+    body:"Good news — no new script! Danish is Latin alphabet + Æ (like 'e' in bed), Ø (like 'u' in burn), Å (like 'o' in more). These 3 come at the END of the alphabet.",
+    example:["Æble = Apple → say: EH-bleh","Øl = Beer → say: UL","År = Year → say: OR","Ø is trickiest — round lips to say 'o' but say 'e'"]},
+   quiz:[
+    {q:"How do you say 'Thank you' in Danish?",options:["Hej","Tak","Farvel","Undskyld"],ans:1},
+    {q:"What does 'Godmorgen' mean?",options:["Good night","Good evening","Good morning","Goodbye"],ans:2},
+    {q:"Which letter sounds like 'u' in 'burn'?",options:["Æ","Å","Ø","A"],ans:2}],
+   tip:"🇮🇳 'Tak' sounds like Hindi ताक. Ja (yes) ≈ Hindi हाँ. Nej (no) rhymes with नहीं's first syllable!"},
+
+  {week:1,day:2,title:"Introducing Yourself",
+   vocab:[
+    {da:"Jeg hedder",pron:"yai HED-er",en:"My name is",hint:"Jeg = I (say 'yai'), hedder = am called"},
+    {da:"Hvad hedder du?",pron:"va HED-er doo",en:"What is your name?",hint:"hv = just V sound!"},
+    {da:"Jeg er fra Indien",pron:"yai air fra IN-dee-en",en:"I am from India",hint:"Er = am/is/are — one word!"},
+    {da:"Jeg taler engelsk",pron:"yai TAY-ler ENG-elsk",en:"I speak English",hint:"Taler = speak (all persons)"},
+    {da:"Jeg forstår ikke",pron:"yai for-STOR ik-eh",en:"I don't understand",hint:"Ikke = not. Very useful!"},
+    {da:"Kan du tale langsommere?",pron:"kan doo TAY-leh LANG-som-eh-reh",en:"Can you speak more slowly?",hint:"Langsommere = more slowly"},
+   ],
+   grammar:{title:"'Er' = am, is, are — all in one!",
+    body:"Danish 'er' covers all Hindi forms (हूँ/है/हैं). One form for I/you/he/she/we/they. Danish's biggest gift to learners!",
+    example:["Jeg er glad = I am happy","Du er dansk = You are Danish","Han er her = He is here","Vi er fra Indien = We are from India"]},
+   quiz:[
+    {q:"'I am from India' in Danish?",options:["Jeg taler Indien","Jeg er fra Indien","Jeg hedder Indien","Jeg forstår Indien"],ans:1},
+    {q:"What does 'Jeg forstår ikke' mean?",options:["I speak Danish","I am not here","I don't understand","I don't want to"],ans:2},
+    {q:"How is 'hv' pronounced?",options:["H+V together","Just V","Just H","Like 'w'"],ans:1}],
+   tip:"🇮🇳 'Jeg' (I) sounds like 'yai' — close to Hindi यह. 'Er' is simpler than Hindi हूँ/है/हैं — one word for all!"},
+
+  {week:1,day:3,title:"Numbers 1–20",
+   vocab:[
+    {da:"en / et",pron:"en / et",en:"one (two forms!)",hint:"en for common nouns, et for neuter"},
+    {da:"to / tre",pron:"toh / treh",en:"two / three",hint:"'to' sounds like Hindi दो — same root!"},
+    {da:"fire / fem",pron:"FEE-reh / fem",en:"four / five",hint:"fire = 'feera', fem = 'femme'"},
+    {da:"seks / syv",pron:"sex / syoo",en:"six / seven",hint:"Syv: the v is silent!"},
+    {da:"otte / ni / ti",pron:"OH-deh / nee / tee",en:"eight / nine / ten",hint:"Otte's t softens to 'd'"},
+    {da:"tyve / hundrede",pron:"TEW-eh / HOON-reh-theh",en:"twenty / hundred",hint:"Base of Danish counting"},
+   ],
+   grammar:{title:"En vs Et — like Hindi gender!",
+    body:"~75% of nouns are 'en-words' (common), ~25% are 'et-words' (neuter). Memorise which is which — but en is always a safe guess!",
+    example:["en mand = a man","et barn = a child","en bil = a car","et hus = a house"]},
+   quiz:[
+    {q:"What is 'two' in Danish?",options:["Tre","En","To","Ti"],ans:2},
+    {q:"Which sounds like Hindi दो?",options:["Fire","To","Fem","Ni"],ans:1},
+    {q:"~What % of Danish nouns use 'en'?",options:["25%","50%","75%","100%"],ans:2}],
+   tip:"🇮🇳 'To' (2) = Hindi दो, 'Tre' (3) echoes तीन — Indo-European cousins sharing the same ancient root!"},
+
+  {week:2,day:1,title:"Days, Months & Time",
+   vocab:[
+    {da:"mandag / tirsdag",pron:"MAN-da / TEERS-da",en:"Monday / Tuesday",hint:"Man = moon"},
+    {da:"onsdag / torsdag",pron:"ONS-da / TORS-da",en:"Wednesday / Thursday",hint:"Odin's day / Thor's day!"},
+    {da:"fredag / lørdag",pron:"FREE-da / LUR-da",en:"Friday / Saturday",hint:"Freya's day"},
+    {da:"søndag",pron:"SUN-da",en:"Sunday",hint:"Sun day — same as English!"},
+    {da:"Hvad er klokken?",pron:"va air KLOK-en",en:"What time is it?",hint:"Klokken = the clock"},
+    {da:"Klokken er tre",pron:"KLOK-en air treh",en:"It is 3 o'clock",hint:"Klokken er [number]"},
+   ],
+   grammar:{title:"Dates use ordinal numbers",
+    body:"første (1st), anden (2nd), tredje (3rd), fjerde (4th). Write: 'den 13. juni' = the 13th of June. Hvornår? = When?",
+    example:["den første januar = 1st January","den anden marts = 2nd March","I dag er det mandag = Today is Monday","Hvornår? = When?"]},
+   quiz:[
+    {q:"What day is 'torsdag'?",options:["Tuesday","Thursday","Saturday","Friday"],ans:1},
+    {q:"'What time is it?' in Danish?",options:["Hvad hedder du?","Hvad er klokken?","Hvornår er du?","Er det sent?"],ans:1},
+    {q:"Which day is named after Odin?",options:["Mandag","Fredag","Onsdag","Tirsdag"],ans:2}],
+   tip:"🇮🇳 'Dag' (day) and Hindi दिन share the same root. Thursday = Thor's day in Danish AND English!"},
+
+  {week:2,day:2,title:"Family & People",
+   vocab:[
+    {da:"mor / far",pron:"more / far",en:"mother / father",hint:"Mor is close to Hindi माँ!"},
+    {da:"søster / bror",pron:"SUS-ter / broh",en:"sister / brother",hint:"Both similar to English"},
+    {da:"barn / børn",pron:"barn / burn",en:"child / children",hint:"Irregular plural — vowel changes!"},
+    {da:"mand / kone",pron:"man / KOH-neh",en:"husband / wife",hint:"en mand, en kone"},
+    {da:"familie",pron:"fa-MEEL-yeh",en:"family",hint:"Almost same as English!"},
+    {da:"bedsteforældre",pron:"BES-teh-for-EL-dreh",en:"grandparents",hint:"Bedste+forældre = best+parents"},
+   ],
+   grammar:{title:"Plurals: add -er, -e, or vowel change",
+    body:"Most plurals add -er. Some add -e. Some change vowel (irregular). Definite plural adds -ne/-ene.",
+    example:["bil → biler (cars)","søster → søstre (sisters)","barn → børn (children — irregular!)","mand → mænd (men — irregular!)","husene = the houses (def. plural)"]},
+   quiz:[
+    {q:"What does 'mor' mean?",options:["More","Mother","Man","Marriage"],ans:1},
+    {q:"Plural of 'barn' (child)?",options:["Barner","Barne","Børn","Barns"],ans:2},
+    {q:"How do you say 'family'?",options:["Famile","Familie","Familier","Families"],ans:1}],
+   tip:"🇮🇳 'Mor' (mother) ≈ Hindi माँ. 'Far' (father) echoes many Indian words for father. These shared roots ease vocabulary!"},
+
+  {week:2,day:3,title:"Colours & Descriptions",
+   vocab:[
+    {da:"rød / blå",pron:"ruhd / blaw",en:"red / blue",hint:"ø=uh, å=aw"},
+    {da:"grøn / gul",pron:"groon / gool",en:"green / yellow",hint:"groon and goal"},
+    {da:"hvid / sort",pron:"veed / sort",en:"white / black",hint:"hvid: hv=v, d silent"},
+    {da:"stor / lille",pron:"store / LIL-eh",en:"big / small",hint:"Stor like English 'store'"},
+    {da:"gammel / ung",pron:"GAM-el / oong",en:"old / young",hint:"Common adjectives"},
+    {da:"smuk",pron:"smook",en:"beautiful",hint:"Very common in Denmark!"},
+   ],
+   grammar:{title:"Adjectives agree with noun — like Hindi!",
+    body:"en-word: basic form. et-word: add -t. Definite/plural: add -e. Exactly like Hindi बड़ा/बड़ी/बड़े!",
+    example:["en stor bil = a big car","et stort hus = a big house (-t!)","den store bil = the big car (-e!)","store biler = big cars (plural, -e)"]},
+   quiz:[
+    {q:"What colour is 'blå'?",options:["Red","Green","Yellow","Blue"],ans:3},
+    {q:"'stor' for et-words becomes?",options:["Storn","Stort","Store","Stores"],ans:1},
+    {q:"'hv' in hvid sounds like?",options:["H+V","Just V","Just H","Silent"],ans:1}],
+   tip:"🇮🇳 Danish adjective agreement (stor/stort/store) is exactly like Hindi बड़ा/बड़ी/बड़े. Already in your brain!"},
+
+  {week:3,day:1,title:"Shopping & Money",
+   vocab:[
+    {da:"Hvad koster det?",pron:"va KOS-ter deh",en:"How much does it cost?",hint:"Most essential shopping phrase"},
+    {da:"Det er for dyrt",pron:"deh air for deert",en:"That is too expensive",hint:"Dyrt = expensive"},
+    {da:"Jeg vil gerne have",pron:"yai vil GAIR-neh ha",en:"I would like to have",hint:"Polite ordering phrase"},
+    {da:"Kan jeg betale med kort?",pron:"kan yai beh-TAY-leh meh kort",en:"Can I pay by card?",hint:"Betale = to pay"},
+    {da:"åben / lukket",pron:"AW-ben / LUK-et",en:"open / closed",hint:"On every Danish shop"},
+    {da:"kvittering",pron:"kvit-TAIR-ing",en:"receipt",hint:"en kvittering"},
+   ],
+   grammar:{title:"Modal verbs: kan, vil, skal, må",
+    body:"These 4 are essential. Like Hindi सकना/चाहना/चाहिए — they come BEFORE the main verb (infinitive).",
+    example:["Jeg kan tale dansk = I can speak Danish","Jeg vil købe det = I want to buy it","Du skal betale nu = You must pay now","Må jeg spørge? = May I ask?"]},
+   quiz:[
+    {q:"'How much does it cost?' in Danish?",options:["Hvad hedder det?","Hvad koster det?","Hvad er det?","Hvor er det?"],ans:1},
+    {q:"What does 'lukket' mean?",options:["Open","Expensive","Closed","Free"],ans:2},
+    {q:"Which modal means 'can'?",options:["Vil","Skal","Må","Kan"],ans:3}],
+   tip:"🇮🇳 Vil=चाहना, Kan=सकना, Skal=must/scheduled, Må=may/allowed. These 4 cover 80% of daily needs!"},
+
+  {week:3,day:2,title:"Food & Restaurant",
+   vocab:[
+    {da:"morgenmad / frokost",pron:"MOR-en-math / FREE-kost",en:"breakfast / lunch",hint:"Morgen+mad = morning+food!"},
+    {da:"aftensmad",pron:"AF-tens-math",en:"dinner",hint:"Aftens+mad = evening+food"},
+    {da:"Jeg er vegetar",pron:"yai air veh-geh-TAR",en:"I am vegetarian",hint:"Important to know in Denmark!"},
+    {da:"Kan jeg få menuen?",pron:"kan yai faw meh-NOO-en",en:"Can I have the menu?",hint:"Menuen = the menu"},
+    {da:"Smager det godt?",pron:"SMAY-er deh got",en:"Does it taste good?",hint:"Smager = tastes"},
+    {da:"Regningen, tak",pron:"RY-ning-en tack",en:"The bill, please",hint:"Regningen = the bill"},
+   ],
+   grammar:{title:"Compound words — Danish glues words!",
+    body:"New words made by joining existing ones — no space. Like Telugu compounds. Just find the parts!",
+    example:["morgen + mad = morgenmad (breakfast)","aften + mad = aftensmad (dinner)","chokolade + kage = chokoladekage (chocolate cake)","grøn + sag = grøntsag (vegetable)"]},
+   quiz:[
+    {q:"What does 'morgenmad' mean?",options:["Morning walk","Breakfast","Morning coffee","Lunch"],ans:1},
+    {q:"'I am vegetarian' in Danish?",options:["Jeg spiser ikke","Jeg er vegetar","Jeg vil ikke kød","Jeg har ikke mad"],ans:1},
+    {q:"'Regningen, tak' means?",options:["The receipt please","The menu please","The bill please","The food please"],ans:2}],
+   tip:"🇮🇳 Telugu compound words (sandhi) and Danish compounds work alike — stick words together for new meaning. Long Danish words are just short words glued!"},
+
+  {week:4,day:1,title:"Present Tense Verbs",
+   vocab:[
+    {da:"at arbejde",pron:"at AR-by-deh",en:"to work",hint:"Jeg arbejder = I work"},
+    {da:"at bo",pron:"at boh",en:"to live/reside",hint:"Jeg bor i København"},
+    {da:"at spise / drikke",pron:"at SPEE-seh / DRIK-eh",en:"to eat / drink",hint:"Spiser/drikker in present"},
+    {da:"at gå",pron:"at gaw",en:"to walk / go",hint:"Går = walks/goes"},
+    {da:"at komme",pron:"at KOM-eh",en:"to come",hint:"Kommer = comes/come"},
+    {da:"at have / være",pron:"at HA-eh / VAIR-eh",en:"to have / to be",hint:"Har / er in present"},
+   ],
+   grammar:{title:"Present tense: just add -r! ONE form for ALL!",
+    body:"Remove 'at', add '-r'. Same form for I/you/he/she/we/they. No conjugation tables! Unlike Hindi हूँ/है/हैं.",
+    example:["at arbejde → arbejder (all persons work)","at spise → spiser (all persons eat)","at bo → bor (all persons live)","at gå → går — irregular but still one form!"]},
+   quiz:[
+    {q:"Present tense of 'at spise'?",options:["Spiser","Spist","Spise","Spiset"],ans:0},
+    {q:"How many present tense verb forms in Danish?",options:["6 like Spanish","3","1 for all persons!","2"],ans:2},
+    {q:"'at bo' means?",options:["To buy","To live/reside","To be","To go"],ans:1}],
+   tip:"🇮🇳 Hindi: मैं खाता हूँ/वो खाता है/हम खाते हैं = 3+ forms. Danish: 'spiser' for everyone. Biggest grammar advantage!"},
+
+  {week:4,day:2,title:"The V2 Word Order Rule",
+   vocab:[
+    {da:"altid / aldrig",pron:"AL-teed / AL-dree",en:"always / never",hint:"Adverbs — trigger V2!"},
+    {da:"ofte / sjældent",pron:"OF-teh / SHEL-ent",en:"often / seldom",hint:"Frequency adverbs"},
+    {da:"normalt",pron:"nor-MALT",en:"normally",hint:"Use in PD2 writing"},
+    {da:"desværre",pron:"des-VAIR-eh",en:"unfortunately",hint:"Key for formal writing"},
+    {da:"heldigvis",pron:"HEL-dee-vees",en:"fortunately",hint:"Heldig = lucky"},
+   ],
+   grammar:{title:"THE most important rule: Verb is ALWAYS 2nd!",
+    body:"Whatever starts the sentence, the verb is ALWAYS element #2. If time/place goes first, subject and verb SWAP (inversion). Master this = master Danish.",
+    example:["Jeg spiser mad om aftenen. (normal)","Om aftenen SPISER jeg mad. (time first → swap!)","Normalt arbejder han ikke. (adverb first → swap!)","I dag har vi dansk. (today first → har is #2)"]},
+   quiz:[
+    {q:"In 'I dag arbejder jeg', why is 'arbejder' before 'jeg'?",options:["Random","Verb must be 2nd element","Past tense","Question form"],ans:1},
+    {q:"'desværre' means?",options:["Of course","Unfortunately","Therefore","However"],ans:1},
+    {q:"What happens when time goes first in Danish?",options:["Nothing","Verb and subject swap","Verb goes to end","Subject disappears"],ans:1}],
+   tip:"🇮🇳 Hindi is SOV. Danish is SVO but verb always hunts position #2. If anything goes first — verb chases it as #2. Most tested rule in PD2!"},
+
+  {week:5,day:1,title:"Past Tense",
+   vocab:[
+    {da:"i går",pron:"ee gore",en:"yesterday",hint:"i = in, går = go"},
+    {da:"i sidste uge",pron:"ee SEES-deh OO-eh",en:"last week",hint:"Sidste = last"},
+    {da:"for tre dage siden",pron:"for treh DA-eh SEE-then",en:"three days ago",hint:"for...siden = ago"},
+    {da:"Da jeg var ung",pron:"da yai var oong",en:"When I was young",hint:"Da = when (past)"},
+    {da:"Jeg var",pron:"yai var",en:"I was",hint:"Var = was/were — one form!"},
+   ],
+   grammar:{title:"Past tense: simple (-ede/-te) + perfect (har+pp)",
+    body:"Simple past: add -ede (group 1) or -te (group 2). Perfect: har + past participle. Use simple past for completed past, perfect for connection to now.",
+    example:["arbejde → arbejdede (worked)","spise → spiste (ate)","Jeg har spist = I have eaten (perfect)","Jeg spiste i går = I ate yesterday (simple)","komme → kom (came — irregular!)"]},
+   quiz:[
+    {q:"'I ate' simple past?",options:["Jeg spiser","Jeg har spist","Jeg spiste","Jeg spise"],ans:2},
+    {q:"Auxiliary verb in Danish perfect?",options:["Er","Var","Har","Vil"],ans:2},
+    {q:"'i går' means?",options:["Today","Tomorrow","Yesterday","Last week"],ans:2}],
+   tip:"🇮🇳 Danish perfect (har + pp) = Hindi perfect (मैंने खाया है). Simple past (spiste) = Hindi simple past (खाया). Same function!"},
+
+  {week:5,day:2,title:"Subordinate Clauses",
+   vocab:[
+    {da:"fordi",pron:"for-DEE",en:"because",hint:"Most common subordinator"},
+    {da:"selvom",pron:"SEL-om",en:"even though / although",hint:"Very common in PD2 texts!"},
+    {da:"når / da",pron:"nor / da",en:"when (now/future) / when (past)",hint:"når recurring, da one past event"},
+    {da:"hvis",pron:"vees",en:"if",hint:"Conditional clauses"},
+    {da:"derfor",pron:"dair-FOR",en:"therefore",hint:"Cause → effect"},
+   ],
+   grammar:{title:"'Ikke' MOVES in subordinate clauses!",
+    body:"MAIN clause: verb then ikke. SUBORDINATE clause (after fordi/når/hvis/selvom/at): ikke jumps BEFORE the verb! Tested heavily in PD2 writing.",
+    example:["MAIN: Jeg spiser ikke kød.","SUB: ...fordi jeg IKKE spiser kød.","MAIN: Han kommer ikke i dag.","SUB: Hun siger, at han IKKE kommer i dag.","MAIN: Vi arbejder ikke på fredag.","SUB: ...selvom vi IKKE arbejder på fredag..."]},
+   quiz:[
+    {q:"In 'fordi jeg ___ arbejder', ikke goes?",options:["After arbejder","Before arbejder","At start","It disappears"],ans:1},
+    {q:"'selvom' means?",options:["Therefore","Even though","According to","Furthermore"],ans:1},
+    {q:"'da' instead of 'når' for 'when' — when?",options:["Future events","One specific past event","Questions","Commands"],ans:1}],
+   tip:"🇮🇳 Hindi negation नहीं stays after verb always. Danish ikke MOVES in sub-clauses. No Hindi equivalent — must memorise! Practice daily."},
+
+  {week:6,day:1,title:"Danish Society & Culture",
+   vocab:[
+    {da:"hygge",pron:"HYU-geh",en:"cosiness / togetherness",hint:"No English word — key Danish concept!"},
+    {da:"velfærdsstat",pron:"vel-FAIRS-stat",en:"welfare state",hint:"Core Danish identity"},
+    {da:"folkeskole",pron:"FOL-keh-skoh-leh",en:"public school ages 6–16",hint:"Folke = people's"},
+    {da:"ligestilling",pron:"lee-eh-STIL-ing",en:"gender equality",hint:"PD2 essay topic!"},
+    {da:"frivillig",pron:"free-VIL-ee",en:"volunteer",hint:"Denmark: very high volunteering rates"},
+    {da:"sundhedssystem",pron:"soon-HETH-sys-tem",en:"healthcare system",hint:"Sundhed = health"},
+   ],
+   grammar:{title:"PD2 Essay connectors",
+    body:"Learn these for writing tasks: Addition, Contrast, Cause, Effect, Condition.",
+    example:["ADDITION: desuden, derudover, også","CONTRAST: men, derimod, selvom","CAUSE: fordi, da, siden","EFFECT: derfor, således, dermed","CONDITION: hvis, i tilfælde af"]},
+   quiz:[
+    {q:"What is 'hygge'?",options:["A food","Cosiness/togetherness","A holiday","School system"],ans:1},
+    {q:"'ligestilling' means?",options:["Long queues","Gender equality","Salary levels","Work hours"],ans:1},
+    {q:"'therefore' in Danish?",options:["Desuden","Selvom","Derimod","Derfor"],ans:3}],
+   tip:"🇮🇳 Hygge ≈ Hindi घर का माहौल or Telugu ఇంటి వాతావరణం. In PD2 essays, mentioning hygge + velfærdsstat shows cultural knowledge examiners love!"},
+
+  {week:7,day:1,title:"PD2 Reading Strategies",
+   vocab:[
+    {da:"ifølge",pron:"ee-FUL-eh",en:"according to",hint:"ifølge artiklen = according to the article"},
+    {da:"påstår",pron:"paw-STOR",en:"claims / asserts",hint:"Author's strong position"},
+    {da:"understreger",pron:"OON-er-stray-er",en:"emphasises",hint:"Text analysis word"},
+    {da:"i modsætning til",pron:"ee MOTH-set-ning til",en:"in contrast to",hint:"Comparison structure"},
+    {da:"på den ene side",pron:"paw den EH-neh SEE-deh",en:"on the one hand",hint:"Classic essay structure"},
+   ],
+   grammar:{title:"Passive voice — in every PD2 text",
+    body:"'bliver + pp' = ongoing passive. 'er + pp' = result/state. '-s passive' in formal texts: siges, bruges, læses.",
+    example:["Det bliver bygget = It is being built","Det er bygget = It is built (done)","Det siges, at... = It is said that...","Dansk tales af 6 mio. = Danish is spoken by 6 million","-s passives: bruges, læses, skrives, sælges"]},
+   quiz:[
+    {q:"'ifølge' means?",options:["Therefore","According to","Even though","Furthermore"],ans:1},
+    {q:"'It is said that' in Danish?",options:["Det er sagt at","Det siges at","Det siger at","Det sagde at"],ans:1},
+    {q:"Ongoing passive in Danish?",options:["Er + pp","Var + pp","Bliver + pp","Har + pp"],ans:2}],
+   tip:"🇮🇳 PD2 reading tip: Read questions FIRST (like CAT/UPSC strategy!). Find 'derfor' and 'selvom' to locate the argument structure quickly."},
+
+  {week:7,day:2,title:"Future & Plans",
+   vocab:[
+    {da:"i morgen",pron:"ee MOR-en",en:"tomorrow",hint:"i + morgen = in + morning"},
+    {da:"næste uge",pron:"NES-teh OO-eh",en:"next week",hint:"Næste = next"},
+    {da:"snart",pron:"snart",en:"soon",hint:"Like 'start' with sn"},
+    {da:"Jeg håber",pron:"yai HOH-ber",en:"I hope",hint:"Håbe = to hope"},
+    {da:"Jeg planlægger",pron:"yai PLAN-leh-er",en:"I am planning",hint:"Planlægge = to plan"},
+   ],
+   grammar:{title:"Future: vil, skal, or present tense!",
+    body:"No single future tense. Use: vil+inf (intention), skal+inf (plan/obligation), or present tense with future time word (informal).",
+    example:["Jeg vil rejse til Danmark = I will travel (intention)","Jeg skal arbejde i morgen = I will/must work tomorrow (plan)","Jeg rejser i morgen = I'm travelling tomorrow (informal future)","Hvornår rejser du? = When are you travelling?"]},
+   quiz:[
+    {q:"'I will travel to Denmark'?",options:["Jeg rejse Danmark","Jeg vil rejse til Danmark","Jeg skal rejse Danmark","Jeg rejser Danmark"],ans:1},
+    {q:"'snart' means?",options:["Smart","Soon","Never","Sometimes"],ans:1},
+    {q:"Which expresses a SCHEDULED plan?",options:["Vil","Kan","Skal","Må"],ans:2}],
+   tip:"🇮🇳 Hindi uses present for near future (मैं कल जाता हूँ). Danish does the same! 'Jeg rejser i morgen' = I'm going tomorrow. Your Hindi instinct is correct!"},
+
+  {week:8,day:1,title:"PD2 Formal Writing",
+   vocab:[
+    {da:"Kære",pron:"KAIR-eh",en:"Dear (formal opening)",hint:"Kære [name], — with comma"},
+    {da:"Med venlig hilsen",pron:"meth VEN-lee HEL-sen",en:"Kind regards",hint:"Standard formal closing"},
+    {da:"Jeg skriver vedrørende",pron:"yai SKREEV-er veth-RU-ren-eh",en:"I am writing regarding",hint:"Formal opening sentence"},
+    {da:"Jeg vil gerne anmode om",pron:"yai vil GAIR-neh an-MOH-the om",en:"I would like to request",hint:"Formal request"},
+    {da:"i forbindelse med",pron:"ee for-BIN-el-seh meth",en:"in connection with",hint:"Very formal phrase"},
+    {da:"Jeg ser frem til at høre fra Dem",pron:"yai sair frem til at HU-reh fra dem",en:"I look forward to hearing from you",hint:"Formal closing sentence"},
+   ],
+   grammar:{title:"PD2 Writing structure + formal De/Dem",
+    body:"150-200 words, 3 paragraphs. Very formal: use 'De/Dem' (capital D) instead of du/dig. Structure: Purpose → Main points → Request/conclusion.",
+    example:["Para 1: Jeg skriver vedrørende [topic]...","Para 2: For det første... Desuden... Derudover...","Para 3: Jeg vil gerne anmode om... / Jeg ser frem til...","Formal: Kan De hjælpe mig?","Normal: Kan du hjælpe mig?"]},
+   quiz:[
+    {q:"Open a formal Danish letter with?",options:["Hej alle!","Kære [name],","Til hvem det angår","God dag"],ans:1},
+    {q:"'Med venlig hilsen' means?",options:["With warm words","Kind regards","Best wishes","Warm greetings"],ans:1},
+    {q:"Very formal 'you' in Danish writing?",options:["Han","Hun","De (capital D)","Man"],ans:2}],
+   tip:"🇮🇳 PD2 writing: Examiners want STRUCTURE over complexity. Think IELTS General letter — clear opening, 2-3 points with connectors (desuden, derudover), formal closing. 150-200 words is plenty!"}
+];
+
+// ═══════════════════════════════════════════════════════
+// STATE & STORAGE
+// ═══════════════════════════════════════════════════════
+const SK = "dpd2_v5";
+let STATE = (() => { try { return JSON.parse(localStorage.getItem(SK)||"null")||{streak:0,lastDate:null,progress:{},weakTopics:{}}; } catch { return {streak:0,lastDate:null,progress:{},weakTopics:{}}; } })();
+function saveState() { try { localStorage.setItem(SK, JSON.stringify(STATE)); } catch {} }
+function todayStr() { return new Date().toISOString().slice(0,10); }
+const START = new Date("2026-06-13");
+function daysPassed() { return Math.max(0, Math.floor((new Date()-START)/86400000)); }
+function getLesson() { return LESSONS[daysPassed() % LESSONS.length]; }
+
+// ═══════════════════════════════════════════════════════
+// SPEECH
+// ═══════════════════════════════════════════════════════
+let voicesLoaded = false;
+if (window.speechSynthesis) {
+  window.speechSynthesis.onvoiceschanged = () => { voicesLoaded = true; };
+  window.speechSynthesis.getVoices();
+}
+function speak(text, rate=0.78) {
+  if (!window.speechSynthesis) return;
+  window.speechSynthesis.cancel();
+  const u = new SpeechSynthesisUtterance(text);
+  const vs = window.speechSynthesis.getVoices();
+  u.voice = vs.find(v=>v.lang.startsWith("da")) || vs.find(v=>v.lang.startsWith("nb")) || vs.find(v=>v.lang.startsWith("sv")) || null;
+  u.lang = "da-DK"; u.rate = rate; u.pitch = 1;
+  window.speechSynthesis.speak(u);
+}
+function lev(a,b) {
+  const m=a.length,n=b.length,dp=Array.from({length:m+1},(_,i)=>Array.from({length:n+1},(_,j)=>i===0?j:j===0?i:0));
+  for(let i=1;i<=m;i++) for(let j=1;j<=n;j++) dp[i][j]=a[i-1]===b[j-1]?dp[i-1][j-1]:1+Math.min(dp[i-1][j],dp[i][j-1],dp[i-1][j-1]);
+  return dp[m][n];
+}
+
+// ═══════════════════════════════════════════════════════
+// AI TUTOR
+// ═══════════════════════════════════════════════════════
+let chatHistory = [];
+async function askTutor(userMsg, lesson) {
+  chatHistory.push({role:"user", content: userMsg});
+  const body = {
+    model: "claude-sonnet-4-6",
+    max_tokens: 500,
+    system: `You are a warm Danish PD2 tutor. Student: Indian, 44 yrs, speaks English/Hindi/Telugu, exam summer 2027, 30 min/day.
+Today's lesson: "${lesson.title}". Vocab: ${lesson.vocab.map(v=>v.da+"("+v.en+")").join(", ")}.
+Rules: under 200 words · pronunciation in [brackets] after new words · compare to Hindi/Telugu when helpful · be encouraging`,
+    messages: chatHistory
+  };
+  const headers = {"Content-Type":"application/json"};
+  if (API_KEY && API_KEY !== "YOUR_ANTHROPIC_API_KEY_HERE") headers["x-api-key"] = API_KEY;
+  const res = await fetch("https://api.anthropic.com/v1/messages", {method:"POST", headers, body:JSON.stringify(body)});
+  if (!res.ok) { const e=await res.json().catch(()=>{}); throw new Error(e?.error?.message||"HTTP "+res.status); }
+  const data = await res.json();
+  const reply = data.content?.find(c=>c.type==="text")?.text || "No response";
+  chatHistory.push({role:"assistant", content: reply});
+  return reply;
+}
+
+// ═══════════════════════════════════════════════════════
+// UI HELPERS
+// ═══════════════════════════════════════════════════════
+function el(tag, attrs={}, ...children) {
+  const e = document.createElement(tag);
+  for (const [k,v] of Object.entries(attrs)) {
+    if (k === "style" && typeof v === "object") Object.assign(e.style, v);
+    else if (k.startsWith("on")) e.addEventListener(k.slice(2).toLowerCase(), v);
+    else e.setAttribute(k, v);
+  }
+  for (const c of children.flat()) {
+    if (c == null) continue;
+    e.appendChild(typeof c === "string" ? document.createTextNode(c) : c);
+  }
+  return e;
+}
+function div(attrs, ...children) { return el("div", attrs, ...children); }
+function btn(attrs, text) { return el("button", attrs, text); }
+function span(s, t) { const e=document.createElement("span"); Object.assign(e.style,s); e.textContent=t; return e; }
+
+// ═══════════════════════════════════════════════════════
+// RENDER ENGINE
+// ═══════════════════════════════════════════════════════
+let currentTab = "learn";
+let currentSection = "vocab";
+let quizState = null;
+let pronIdx = 0;
+let pronDone = new Set();
+let micActive = false;
+let currentRecognition = null;
+
+function render() {
+  const app = document.getElementById("app");
+  app.innerHTML = "";
+  const lesson = getLesson();
+  const today = todayStr();
+  const dp = daysPassed();
+  const todayP = STATE.progress[today] || {};
+  const pct = Math.min(100, Math.round((dp/382)*100));
+  const completed = Object.values(STATE.progress).filter(p=>p.completed).length;
+
+  // HEADER
+  const header = div({style:{background:"#0F2A3A",color:"white",paddingBottom:"0"}});
+
+  const topRow = div({style:{display:"flex",justifyContent:"space-between",alignItems:"center",padding:"16px 18px 10px"}});
+  const topLeft = div({});
+  topLeft.appendChild(span({fontSize:"10px",letterSpacing:"3px",color:"#4ECDC4",textTransform:"uppercase",display:"block"},"DANSK PD2 · 2026–2027"));
+  topLeft.appendChild(span({fontSize:"18px",fontWeight:"800",display:"block",fontFamily:"Georgia,serif"},"Din daglige lektion"));
+  topLeft.appendChild(span({fontSize:"11px",color:"#A3B8C2",display:"block"},`Your daily lesson · ${pct}% of journey`));
+  const streakBox = div({style:{textAlign:"center"}});
+  streakBox.appendChild(span({fontSize:"28px",fontWeight:"900",color:"#4ECDC4",display:"block",lineHeight:"1"},"🔥"+STATE.streak));
+  streakBox.appendChild(span({fontSize:"10px",color:"#A3B8C2",display:"block"},"dag streak"));
+  topRow.appendChild(topLeft); topRow.appendChild(streakBox);
+  header.appendChild(topRow);
+
+  // Lesson badge
+  const badge = div({style:{background:"#162F3E",padding:"8px 18px",display:"flex",justifyContent:"space-between",alignItems:"center"}});
+  const bl = div({});
+  bl.appendChild(span({fontSize:"10px",color:"#4ECDC4",display:"block"},`TODAY · Lesson ${(dp%LESSONS.length)+1} of ${LESSONS.length}`));
+  bl.appendChild(span({fontSize:"14px",fontWeight:"700",display:"block"},lesson.title));
+  const icons = div({style:{display:"flex",gap:"10px",alignItems:"center"}});
+  [["vocab","📚"],["grammar","🔤"],["quiz","✏️"]].forEach(([s,ic]) => {
+    icons.appendChild(span({fontSize:"18px",opacity:todayP[s]?"1":"0.25"},ic));
+  });
+  badge.appendChild(bl); badge.appendChild(icons);
+  header.appendChild(badge);
+
+  // NAV
+  const nav = div({style:{display:"flex",background:"#162F3E"}});
+  [["learn","📖 Learn"],["pron","🗣️ Speak"],["progress","📊 Progress"],["tutor","🤖 Tutor"]].forEach(([id,label]) => {
+    const b = btn({
+      style:{flex:"1",padding:"10px 2px",border:"none",fontSize:"11px",fontWeight:"600",
+        background:currentTab===id?"#F4F2ED":"transparent",
+        color:currentTab===id?"#0F2A3A":"#A3B8C2",
+        borderRadius:currentTab===id?"6px 6px 0 0":"0",cursor:"pointer"},
+      onClick:()=>{ currentTab=id; if(id==="learn")currentSection="vocab"; render(); }
+    }, label);
+    nav.appendChild(b);
+  });
+  header.appendChild(nav);
+  app.appendChild(header);
+
+  // BODY
+  const body = div({style:{padding:"16px"}});
+
+  if (currentTab === "learn") renderLearn(body, lesson, todayP);
+  else if (currentTab === "pron") renderPron(body, lesson);
+  else if (currentTab === "progress") renderProgress(body, dp, completed);
+  else if (currentTab === "tutor") renderTutor(body, lesson);
+
+  app.appendChild(body);
+}
+
+// ── LEARN ──────────────────────────────────────────────
+function renderLearn(body, lesson, todayP) {
+  // Section tabs
+  const tabs = div({style:{display:"flex",gap:"8px",marginBottom:"14px"}});
+  [["vocab","📚 Words",todayP.vocab],["grammar","🔤 Grammar",todayP.grammar],["quiz","✏️ Quiz",todayP.quiz]].forEach(([id,label,done]) => {
+    const b = btn({
+      style:{flex:"1",padding:"9px 4px",borderRadius:"8px",border:"none",fontSize:"12px",fontWeight:"700",
+        background:currentSection===id?"#0F2A3A":done?"#D5F5E3":"white",
+        color:currentSection===id?"white":done?"#2E7D6E":"#555",
+        outline:done&&currentSection!==id?"2px solid #2E7D6E":"none",cursor:"pointer"},
+      onClick:()=>{ currentSection=id; if(id==="quiz")quizState=null; render(); }
+    }, (done?"✓ ":"")+label);
+    tabs.appendChild(b);
+  });
+  body.appendChild(tabs);
+
+  if (currentSection === "vocab") {
+    const card = div({class:"card"});
+    card.appendChild(span({fontSize:"15px",fontWeight:"700",display:"block",marginBottom:"2px"},"📚 Today's Words"));
+    card.appendChild(span({fontSize:"12px",color:"#888",display:"block",marginBottom:"12px"},"Tap to flip · 🔊 hear · 🎤 say it"));
+    lesson.vocab.forEach(v => card.appendChild(makeVocabCard(v)));
+    body.appendChild(card);
+
+    const tip = div({class:"card",style:{background:"#FEF3E2",border:"1px solid #F7DC6F"}});
+    tip.appendChild(span({fontSize:"13px",fontWeight:"700",display:"block",marginBottom:"4px"},"🇮🇳 Indian Connection"));
+    tip.appendChild(span({fontSize:"13px",color:"#555",lineHeight:"1.6",display:"block"},lesson.tip));
+    body.appendChild(tip);
+
+    const go = btn({class:"btn-primary", onClick:()=>{
+      markSection("vocab"); currentSection="grammar"; render();
+    }}, "Done — Go to Grammar →");
+    body.appendChild(go);
+  }
+
+  if (currentSection === "grammar") {
+    const card = div({class:"card"});
+    card.appendChild(span({fontSize:"15px",fontWeight:"700",display:"block",marginBottom:"10px"},"🔤 Grammar Focus"));
+    const box = div({style:{background:"#0F2A3A",borderRadius:"10px",padding:"14px",marginBottom:"12px"}});
+    box.appendChild(span({fontSize:"14px",fontWeight:"800",color:"#4ECDC4",fontFamily:"Georgia,serif",display:"block",marginBottom:"6px"},lesson.grammar.title));
+    box.appendChild(span({fontSize:"13px",color:"#A3C4CC",lineHeight:"1.7",display:"block"},lesson.grammar.body));
+    card.appendChild(box);
+    card.appendChild(span({fontSize:"13px",fontWeight:"700",color:"#555",display:"block",marginBottom:"8px"},"Examples — tap 🔊 to hear"));
+    lesson.grammar.example.forEach(ex => {
+      const row = div({style:{display:"flex",alignItems:"center",gap:"8px",background:"#F4F2ED",borderRadius:"8px",padding:"9px 12px",marginBottom:"7px",borderLeft:"3px solid #4ECDC4"}});
+      row.appendChild(span({flex:"1",fontSize:"13px",fontFamily:"Georgia,serif",color:"#0F2A3A"},ex));
+      const sb = btn({style:{background:"none",border:"none",cursor:"pointer",fontSize:"16px",padding:"0 4px"}, onClick:()=>speak(ex.split("=")[0].split("→")[0].trim())},"🔊");
+      row.appendChild(sb);
+      card.appendChild(row);
+    });
+    body.appendChild(card);
+    const go = btn({class:"btn-primary", onClick:()=>{ markSection("grammar"); currentSection="quiz"; quizState=null; render(); }}, "Understood — Take Quiz →");
+    body.appendChild(go);
+  }
+
+  if (currentSection === "quiz") {
+    const card = div({class:"card"});
+    card.appendChild(span({fontSize:"15px",fontWeight:"700",display:"block",marginBottom:"12px"},"✏️ Quick Quiz"));
+    if (!quizState) quizState = {cur:0, score:0, sel:null, done:false, finalScore:0};
+    if (quizState.done) {
+      renderQuizResult(card, quizState.finalScore, lesson.quiz.length, lesson);
+    } else {
+      renderQuizQuestion(card, lesson.quiz, lesson);
+    }
+    body.appendChild(card);
+  }
+}
+
+function makeVocabCard(item) {
+  let flipped = false;
+  const card = div({style:{background:"white",border:"2px solid #E8E4DC",borderRadius:"12px",padding:"13px 13px 10px",marginBottom:"10px",transition:"all 0.2s"}});
+
+  const top = div({style:{display:"flex",alignItems:"flex-start",gap:"8px"}});
+  const content = div({style:{flex:"1",cursor:"pointer"}});
+  const daWord = span({fontSize:"19px",fontWeight:"800",color:"#0F2A3A",fontFamily:"Georgia,serif",display:"block"},item.da);
+  const pronHint = span({fontSize:"12px",color:"#AAA",display:"block",marginTop:"2px"},"/"+item.pron+"/ · tap to reveal");
+  content.appendChild(daWord); content.appendChild(pronHint);
+
+  let feedbackEl = null;
+  const fbDiv = div({style:{marginTop:"8px"}});
+
+  content.onclick = () => {
+    flipped = !flipped;
+    if (flipped) {
+      card.style.background = "#0F2A3A";
+      card.style.borderColor = "#4ECDC4";
+      daWord.style.color = "#4ECDC4";
+      pronHint.innerHTML = "";
+      const pronSpan = span({fontSize:"13px",color:"#7EC8C8",fontStyle:"italic",display:"block"},"/"+item.pron+"/");
+      const enSpan = span({fontSize:"15px",fontWeight:"600",color:"white",display:"block",marginTop:"3px"},item.en);
+      const hintSpan = span({fontSize:"12px",color:"#A3C4CC",display:"block",marginTop:"5px"},"💡 "+item.hint);
+      pronHint.appendChild(pronSpan); pronHint.appendChild(enSpan); pronHint.appendChild(hintSpan);
+    } else {
+      card.style.background = "white";
+      card.style.borderColor = "#E8E4DC";
+      daWord.style.color = "#0F2A3A";
+      pronHint.innerHTML = "/"+item.pron+"/ · tap to reveal";
+    }
+  };
+
+  const btns = div({style:{display:"flex",flexDirection:"column",gap:"5px",flexShrink:"0"}});
+  const spkBtn = btn({style:{width:"34px",height:"34px",borderRadius:"50%",border:"none",background:"#E8F8F5",fontSize:"16px",cursor:"pointer"}, onClick:(e)=>{e.stopPropagation();speak(item.da);}}, "🔊");
+
+  let recActive = false;
+  const micBtn = btn({style:{width:"34px",height:"34px",borderRadius:"50%",border:"none",background:"#FEF3E2",fontSize:"16px",cursor:"pointer"}}, "🎤");
+  micBtn.onclick = (e) => {
+    e.stopPropagation();
+    fbDiv.innerHTML = "";
+    const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+    if (!SR) { showFb(fbDiv, null, "Speech recognition needs Chrome browser"); return; }
+    if (currentRecognition) { try{currentRecognition.stop();}catch(e){} }
+    const rec = new SR();
+    rec.lang = "da-DK"; rec.interimResults=false; rec.maxAlternatives=5;
+    currentRecognition = rec;
+    rec.onstart = () => { micBtn.textContent="⏹"; micBtn.style.background="#E74C3C"; micBtn.style.animation="pulse 0.8s infinite"; };
+    rec.onend = () => { micBtn.textContent="🎤"; micBtn.style.background="#FEF3E2"; micBtn.style.animation=""; };
+    rec.onresult = (ev) => {
+      const alts = Array.from(ev.results[0]).map(r=>r.transcript.toLowerCase().trim());
+      const target = item.da.toLowerCase().replace(/[?.!,]/g,"").trim();
+      const ok = alts.some(h => { const c=h.replace(/[?.!,]/g,"").trim(); return c===target||c.includes(target)||target.includes(c)||lev(c,target)<=Math.ceil(target.length*0.35); });
+      showFb(fbDiv, ok, ok ? "✅ Great pronunciation!" : `❌ I heard: "${alts[0]}" — try again`);
+    };
+    rec.onerror = (ev) => showFb(fbDiv, null, "Mic error: "+ev.error+". Allow mic in Settings > Safari.");
+    rec.start();
+  };
+  btns.appendChild(spkBtn); btns.appendChild(micBtn);
+  top.appendChild(content); top.appendChild(btns);
+  card.appendChild(top); card.appendChild(fbDiv);
+  return card;
+}
+
+function showFb(container, ok, msg) {
+  container.innerHTML = "";
+  const fb = div({style:{padding:"8px 10px",borderRadius:"8px",marginTop:"8px",fontSize:"13px",fontWeight:"600",
+    background:ok===true?"#D5F5E3":ok===false?"#FADBD8":"#FEF9E7",
+    color:ok===true?"#2E7D6E":ok===false?"#C0392B":"#7D6608"}});
+  fb.textContent = msg;
+  container.appendChild(fb);
+}
+
+function renderQuizQuestion(card, questions, lesson) {
+  const q = questions[quizState.cur];
+  const hdr = div({style:{display:"flex",justifyContent:"space-between",marginBottom:"10px"}});
+  hdr.appendChild(span({fontSize:"12px",color:"#888"},`Q${quizState.cur+1} / ${questions.length}`));
+  hdr.appendChild(span({fontSize:"12px",fontWeight:"700",color:"#2E7D6E"},"Score: "+quizState.score));
+  card.appendChild(hdr);
+  card.appendChild(span({fontSize:"15px",fontWeight:"700",color:"#0F2A3A",display:"block",marginBottom:"14px",lineHeight:"1.5"},q.q));
+
+  q.options.forEach((opt, i) => {
+    let bg="white",border="1px solid #E8E4DC",col="#333";
+    if (quizState.sel !== null) {
+      if (i===q.ans){bg="#D5F5E3";border="2px solid #2E7D6E";col="#2E7D6E";}
+      else if(i===quizState.sel){bg="#FADBD8";border="2px solid #C0392B";col="#C0392B";}
+    }
+    const ob = btn({style:{display:"block",width:"100%",textAlign:"left",padding:"12px 14px",borderRadius:"10px",marginBottom:"8px",
+      background:bg,border,color:col,fontSize:"14px",fontWeight:"500",cursor:quizState.sel!==null?"default":"pointer",transition:"all 0.2s"},
+      onClick:()=>{
+        if(quizState.sel!==null) return;
+        const correct = i===q.ans;
+        quizState.sel = i;
+        if(correct) quizState.score++;
+        render();
+        setTimeout(()=>{
+          if(quizState.cur+1>=questions.length){
+            quizState.finalScore=quizState.score; quizState.done=true;
+            markSection("quiz", quizState.score, questions.length);
+          } else { quizState.cur++; quizState.sel=null; }
+          render();
+        }, 1100);
+      }}, opt);
+    card.appendChild(ob);
+  });
+}
+
+function renderQuizResult(card, score, total, lesson) {
+  const pct = Math.round((score/total)*100);
+  card.appendChild(span({fontSize:"44px",display:"block",textAlign:"center",marginBottom:"8px"},pct>=70?"🎉":"📚"));
+  card.appendChild(span({fontSize:"22px",fontWeight:"800",color:"#0F2A3A",display:"block",textAlign:"center"},score+"/"+total));
+  card.appendChild(span({fontSize:"13px",color:"#666",display:"block",textAlign:"center",marginTop:"4px"},
+    pct>=80?"Excellent! Great work.":pct>=60?"Good — review missed ones.":"Keep practising — you'll get there!"));
+  const tag = div({style:{textAlign:"center",marginTop:"10px"}});
+  tag.appendChild(span({display:"inline-block",padding:"5px 18px",borderRadius:"20px",fontWeight:"700",fontSize:"14px",
+    background:pct>=70?"#D5F5E3":"#FADBD8",color:pct>=70?"#2E7D6E":"#C0392B"},pct+"% "+(pct>=70?"✓ Pass":"— Review")));
+  card.appendChild(tag);
+  const row = div({style:{display:"flex",gap:"8px",marginTop:"14px"}});
+  row.appendChild(btn({style:{flex:"1",padding:"10px",background:"#2E7D6E",color:"white",border:"none",borderRadius:"20px",fontSize:"13px",fontWeight:"700",cursor:"pointer"},
+    onClick:()=>{currentTab="pron";render();}},"🗣️ Practise Pronunciation"));
+  row.appendChild(btn({style:{flex:"1",padding:"10px",background:"#0F2A3A",color:"white",border:"none",borderRadius:"20px",fontSize:"13px",fontWeight:"700",cursor:"pointer"},
+    onClick:()=>{currentTab="tutor";render();}},"🤖 Ask Tutor"));
+  card.appendChild(row);
+}
+
+function markSection(sec, qs, qt) {
+  const today=todayStr();
+  const todayP = STATE.progress[today]||{};
+  STATE.progress[today] = {...todayP,[sec]:true,title:getLesson().title};
+  if(STATE.progress[today].vocab && STATE.progress[today].grammar && STATE.progress[today].quiz){
+    const yest=new Date(Date.now()-86400000).toISOString().slice(0,10);
+    STATE.streak=(STATE.lastDate===yest?STATE.streak:0)+1;
+    STATE.lastDate=today;
+    STATE.progress[today].completed=true;
+  }
+  if(sec==="quiz"&&qs!==undefined){
+    const arr=[...(STATE.weakTopics[getLesson().title]||[]),qs/qt].slice(-5);
+    STATE.weakTopics[getLesson().title]=arr;
+  }
+  saveState();
+}
+
+// ── PRONUNCIATION ──────────────────────────────────────
+function renderPron(body, lesson) {
+  const item = lesson.vocab[pronIdx];
+  const card = div({class:"card"});
+  card.appendChild(span({fontSize:"15px",fontWeight:"700",display:"block",marginBottom:"2px"},"🗣️ Pronunciation Practice"));
+  card.appendChild(span({fontSize:"12px",color:"#888",display:"block",marginBottom:"16px"},
+    pronDone.size+"/"+lesson.vocab.length+" cleared · Listen → Repeat → Tap 🎤"));
+
+  const wordBox = div({style:{textAlign:"center",padding:"20px 0"}});
+  wordBox.appendChild(span({fontSize:"38px",fontWeight:"900",color:"#0F2A3A",fontFamily:"Georgia,serif",display:"block"},item.da));
+  wordBox.appendChild(span({fontSize:"16px",color:"#666",display:"block",marginTop:"4px"},"/"+item.pron+"/"));
+  wordBox.appendChild(span({fontSize:"14px",color:"#888",display:"block",marginTop:"2px"},item.en));
+  wordBox.appendChild(span({fontSize:"12px",color:"#AAA",fontStyle:"italic",display:"block",marginTop:"6px"},item.hint));
+  card.appendChild(wordBox);
+
+  const fbDiv = div({});
+  const btnRow = div({style:{display:"flex",gap:"10px",justifyContent:"center",marginBottom:"12px"}});
+
+  const hearBtn = btn({style:{padding:"12px 24px",background:"#0F2A3A",color:"white",border:"none",borderRadius:"30px",fontSize:"15px",fontWeight:"700",cursor:"pointer"},
+    onClick:()=>speak(item.da)}, "🔊 Hear it");
+
+  let recActive=false;
+  const sayBtn = btn({style:{padding:"12px 24px",background:"#2E7D6E",color:"white",border:"none",borderRadius:"30px",fontSize:"15px",fontWeight:"700",cursor:"pointer"}}, "🎤 Say it");
+  sayBtn.onclick = () => {
+    fbDiv.innerHTML="";
+    const SR = window.SpeechRecognition||window.webkitSpeechRecognition;
+    if(!SR){showFb(fbDiv,null,"Needs Chrome. Try Chrome app on iPhone.");return;}
+    if(currentRecognition){try{currentRecognition.stop();}catch(e){}}
+    const rec=new SR();
+    rec.lang="da-DK";rec.interimResults=false;rec.maxAlternatives=5;
+    currentRecognition=rec;
+    rec.onstart=()=>{sayBtn.textContent="⏹ Stop";sayBtn.style.background="#E74C3C";sayBtn.style.animation="pulse 0.8s infinite";};
+    rec.onend=()=>{sayBtn.textContent="🎤 Say it";sayBtn.style.background="#2E7D6E";sayBtn.style.animation="";};
+    rec.onresult=(ev)=>{
+      const alts=Array.from(ev.results[0]).map(r=>r.transcript.toLowerCase().trim());
+      const target=item.da.toLowerCase().replace(/[?.!,]/g,"").trim();
+      const ok=alts.some(h=>{const c=h.replace(/[?.!,]/g,"").trim();return c===target||c.includes(target)||target.includes(c)||lev(c,target)<=Math.ceil(target.length*0.35);});
+      showFb(fbDiv,ok,ok?"✅ Excellent! Great Danish pronunciation!":` ❌ I heard: "${alts[0]}" — listen again and retry`);
+      if(ok)pronDone.add(pronIdx);
+    };
+    rec.onerror=(ev)=>showFb(fbDiv,null,"Mic: "+ev.error+". On iPhone: Settings → Safari → Microphone → Allow");
+    rec.start();
+  };
+  btnRow.appendChild(hearBtn); btnRow.appendChild(sayBtn);
+  card.appendChild(btnRow); card.appendChild(fbDiv);
+
+  // Dots nav
+  const dots = div({style:{display:"flex",gap:"6px",justifyContent:"center",margin:"12px 0"}});
+  lesson.vocab.forEach((_,i)=>{
+    const d=div({style:{width:"12px",height:"12px",borderRadius:"50%",cursor:"pointer",
+      background:pronDone.has(i)?"#2E7D6E":i===pronIdx?"#0F2A3A":"#DDD",transition:"background 0.2s"}});
+    d.onclick=()=>{pronIdx=i;fbDiv.innerHTML="";render();};
+    dots.appendChild(d);
+  });
+  card.appendChild(dots);
+
+  const navRow = div({style:{display:"flex",gap:"8px"}});
+  const prevB = btn({style:{flex:"1",padding:"10px",background:pronIdx===0?"#EEE":"#F0EDE6",color:pronIdx===0?"#CCC":"#333",border:"none",borderRadius:"8px",fontWeight:"700",cursor:pronIdx===0?"default":"pointer"},
+    onClick:()=>{if(pronIdx>0){pronIdx--;fbDiv.innerHTML="";render();}}}, "← Prev");
+  const nextB = btn({style:{flex:"1",padding:"10px",background:pronIdx===lesson.vocab.length-1?"#EEE":"#0F2A3A",color:pronIdx===lesson.vocab.length-1?"#CCC":"white",border:"none",borderRadius:"8px",fontWeight:"700",cursor:pronIdx===lesson.vocab.length-1?"default":"pointer"},
+    onClick:()=>{if(pronIdx<lesson.vocab.length-1){pronIdx++;fbDiv.innerHTML="";render();}}}, "Next →");
+  navRow.appendChild(prevB); navRow.appendChild(nextB);
+  card.appendChild(navRow);
+  body.appendChild(card);
+
+  const tip = div({class:"card",style:{background:"#E8F4FD",border:"1px solid #AED6F1"}});
+  tip.appendChild(span({fontSize:"13px",fontWeight:"700",color:"#1A5276",display:"block",marginBottom:"6px"},"💡 Pronunciation tips for Indian speakers"));
+  [
+    "Soft 'd' (in mad, ved, god) → sounds like English 'th' — say 'math' not 'mad'",
+    "Ø → round lips to say 'o' but try to say 'e'",
+    "Danish 'r' → guttural, back of throat, like gentle throat-clearing",
+    "Silent letters common: hvid (veed), hånd (hon), tog (toh)",
+    "Speech recognition works best in Chrome on Android/desktop"
+  ].forEach(t=>{
+    tip.appendChild(span({fontSize:"12px",color:"#1A5276",display:"block",marginBottom:"4px"},"• "+t));
+  });
+  body.appendChild(tip);
+  // pulse style
+  if (!document.getElementById("pulsestyle")) {
+    const s=document.createElement("style"); s.id="pulsestyle";
+    s.textContent="@keyframes pulse{0%,100%{transform:scale(1)}50%{transform:scale(1.12)}}";
+    document.head.appendChild(s);
+  }
+}
+
+// ── PROGRESS ────────────────────────────────────────────
+function renderProgress(body, dp, completed) {
+  const statsRow = div({style:{display:"grid",gridTemplateColumns:"1fr 1fr 1fr",gap:"10px",marginBottom:"14px"}});
+  [["\uD83D\uDD25",STATE.streak,"Streak"],["✅",completed,"Days Done"],["📅",dp,"Days In"]].forEach(([ic,val,lb])=>{
+    const c=div({class:"card",style:{textAlign:"center",padding:"12px 8px"}});
+    c.appendChild(span({fontSize:"20px",display:"block"},ic));
+    c.appendChild(span({fontSize:"22px",fontWeight:"900",color:"#0F2A3A",display:"block"},val));
+    c.appendChild(span({fontSize:"11px",color:"#888",display:"block"},lb));
+    statsRow.appendChild(c);
+  });
+  body.appendChild(statsRow);
+
+  const roadCard = div({class:"card"});
+  roadCard.appendChild(span({fontSize:"15px",fontWeight:"700",display:"block",marginBottom:"12px"},"🗓️ 1-Year Roadmap to PD2"));
+  [{label:"Phase 1: Foundations",period:"Jun–Sep 2026",color:"#2E7D6E",s:0,e:119},
+   {label:"Phase 2: Building Blocks",period:"Oct–Dec 2026",color:"#1A5276",s:119,e:210},
+   {label:"Phase 3: Intermediate",period:"Jan–Mar 2027",color:"#6C3483",s:210,e:301},
+   {label:"Phase 4: Exam Ready",period:"Apr–Jun 2027",color:"#B7410E",s:301,e:382}
+  ].forEach(ph=>{
+    const elapsed=Math.min(ph.e-ph.s,Math.max(0,dp-ph.s));
+    const pct=Math.round((elapsed/(ph.e-ph.s))*100);
+    const active=dp>=ph.s&&dp<ph.e;
+    const row=div({style:{marginBottom:"12px"}});
+    const hdr=div({style:{display:"flex",justifyContent:"space-between",marginBottom:"4px"}});
+    hdr.appendChild(span({fontSize:"13px",fontWeight:active?"700":"500",color:active?"#0F2A3A":"#888"},(active?"▶ ":"")+ph.label));
+    hdr.appendChild(span({fontSize:"11px",color:"#888"},ph.period));
+    row.appendChild(hdr);
+    const bar=div({style:{background:"#F0EDE6",borderRadius:"4px",height:"8px"}});
+    bar.appendChild(div({style:{width:pct+"%",background:ph.color,height:"100%",borderRadius:"4px"}}));
+    row.appendChild(bar);
+    row.appendChild(span({fontSize:"11px",color:"#AAA",display:"block",marginTop:"2px"},pct+"%"));
+    roadCard.appendChild(row);
+  });
+  body.appendChild(roadCard);
+
+  const histCard = div({class:"card"});
+  histCard.appendChild(span({fontSize:"15px",fontWeight:"700",display:"block",marginBottom:"10px"},"📋 Recent Sessions"));
+  const entries = Object.entries(STATE.progress).slice(-6).reverse();
+  if (entries.length===0) {
+    histCard.appendChild(span({fontSize:"13px",color:"#AAA",display:"block",textAlign:"center",padding:"16px"},"Complete your first lesson to see history."));
+  } else {
+    entries.forEach(([date,p])=>{
+      const row=div({style:{display:"flex",justifyContent:"space-between",alignItems:"center",padding:"7px 0",borderBottom:"1px solid #F0EDE6"}});
+      const left=div({});
+      left.appendChild(span({fontSize:"13px",fontWeight:"600",display:"block"},p.title||"Lesson"));
+      left.appendChild(span({fontSize:"11px",color:"#888",display:"block"},date));
+      row.appendChild(left);
+      row.appendChild(span({display:"inline-block",padding:"3px 10px",borderRadius:"20px",fontSize:"11px",fontWeight:"700",
+        background:p.completed?"#D5F5E3":"#FEF9E7",color:p.completed?"#2E7D6E":"#E67E22"},p.completed?"✓ Done":"Partial"));
+      histCard.appendChild(row);
+    });
+  }
+  body.appendChild(histCard);
+
+  const weak=Object.entries(STATE.weakTopics).map(([t,arr])=>({t,avg:arr.reduce((a,b)=>a+b,0)/arr.length})).filter(w=>w.avg<0.7).sort((a,b)=>a.avg-b.avg);
+  if(weak.length>0){
+    const wc=div({class:"card",style:{background:"#FEF3E2",border:"1px solid #F7DC6F"}});
+    wc.appendChild(span({fontSize:"14px",fontWeight:"700",display:"block",marginBottom:"8px"},"⚠️ Review These Topics"));
+    weak.forEach(w=>{
+      const row=div({style:{display:"flex",justifyContent:"space-between",padding:"6px 0",borderBottom:"1px solid #F7E794"}});
+      row.appendChild(span({fontSize:"13px"},w.t));
+      row.appendChild(span({fontSize:"12px",color:"#E74C3C",fontWeight:"700"},Math.round(w.avg*100)+"% quiz score"));
+      wc.appendChild(row);
+    });
+    wc.appendChild(span({fontSize:"12px",color:"#888",display:"block",marginTop:"8px"},"Ask the AI Tutor to drill you on these!"));
+    body.appendChild(wc);
+  }
+}
+
+// ── TUTOR ───────────────────────────────────────────────
+function renderTutor(body, lesson) {
+  const card = div({class:"card"});
+  card.appendChild(span({fontSize:"14px",fontWeight:"700",display:"block",marginBottom:"2px"},"🤖 Din Dansklærer — AI Tutor"));
+  card.appendChild(span({fontSize:"12px",color:"#888",display:"block",marginBottom:"10px"},"Today: "+lesson.title+" · Powered by Claude"));
+
+  // Quick prompts
+  const qps = div({style:{display:"flex",flexWrap:"wrap",gap:"5px",marginBottom:"12px"}});
+  ["Explain today's grammar again","Give me 5 more examples","Compare to Hindi grammar","Quiz me on today's vocab","PD2 exam tip","Trickiest pronunciation today"].forEach(q=>{
+    qps.appendChild(btn({style:{fontSize:"11px",padding:"5px 10px",background:"#F0EDE6",color:"#333",border:"1px solid #DDD",borderRadius:"20px",cursor:"pointer"},
+      onClick:()=>sendToTutor(q,lesson,chatDiv,spinnerEl)},q));
+  });
+  card.appendChild(qps);
+
+  const chatDiv = div({style:{maxHeight:"280px",overflowY:"auto",marginBottom:"10px"}});
+  if (chatHistory.length===0) {
+    const welcome = div({style:{color:"#AAA",fontSize:"13px",textAlign:"center",padding:"20px 0"}});
+    welcome.textContent="Ask anything about Danish, today's lesson, or PD2!";
+    chatDiv.appendChild(welcome);
+  } else {
+    chatHistory.forEach(m=>{
+      const mb=div({style:{marginBottom:"10px",padding:"10px 13px",borderRadius:"10px",fontSize:"13px",lineHeight:"1.65",whiteSpace:"pre-wrap",
+        background:m.role==="user"?"#0F2A3A":"#F4F2ED",color:m.role==="user"?"white":"#222",
+        marginLeft:m.role==="user"?"20px":"0",marginRight:m.role==="user"?"0":"20px"}});
+      mb.textContent=m.content;
+      chatDiv.appendChild(mb);
+    });
+  }
+  card.appendChild(chatDiv);
+
+  const spinnerEl = div({style:{color:"#888",fontSize:"13px",fontStyle:"italic",padding:"4px 0",display:"none"}});
+  spinnerEl.textContent="🇩🇰 Tænker... (thinking...)";
+  card.appendChild(spinnerEl);
+
+  const inputRow = div({style:{display:"flex",gap:"8px"}});
+  const inp = el("input",{type:"text",placeholder:"Ask anything...",style:{flex:"1",padding:"10px 12px",borderRadius:"8px",border:"1px solid #DDD",fontSize:"13px",outline:"none"}});
+  inp.addEventListener("keydown",e=>{if(e.key==="Enter"&&inp.value.trim()) sendToTutor(inp.value.trim(),lesson,chatDiv,spinnerEl,inp);});
+  const sendB = btn({style:{padding:"10px 14px",background:"#0F2A3A",color:"white",border:"none",borderRadius:"8px",fontSize:"13px",fontWeight:"700",cursor:"pointer"},
+    onClick:()=>{if(inp.value.trim())sendToTutor(inp.value.trim(),lesson,chatDiv,spinnerEl,inp);}}, "Send");
+  inputRow.appendChild(inp); inputRow.appendChild(sendB);
+  card.appendChild(inputRow);
+  body.appendChild(card);
+
+  // PD2 box
+  const pd2=div({class:"card",style:{background:"#0F2A3A",color:"white"}});
+  pd2.appendChild(span({fontSize:"13px",fontWeight:"700",color:"#4ECDC4",display:"block",marginBottom:"10px"},"📋 PD2 Exam Format"));
+  [["📖","Reading","2 texts (~500 words) + comprehension"],
+   ["🎧","Listening","2 audio clips — everyday & formal Danish"],
+   ["✍️","Writing","Formal email or essay, 150–200 words"],
+   ["🗣️","Speaking","Oral conversation + topic presentation"]
+  ].forEach(([ic,skill,desc])=>{
+    const row=div({style:{display:"flex",gap:"8px",marginBottom:"8px"}});
+    row.appendChild(span({fontSize:"16px"},ic));
+    const d=div({});
+    d.appendChild(span({fontSize:"12px",fontWeight:"700",color:"#4ECDC4",display:"block"},skill));
+    d.appendChild(span({fontSize:"11px",color:"#A3B8C2",display:"block"},desc));
+    row.appendChild(d); pd2.appendChild(row);
+  });
+  pd2.appendChild(div({style:{background:"#162F3E",borderRadius:"8px",padding:"10px",marginTop:"8px"}})).appendChild(
+    span({fontSize:"11px",color:"#A3B8C2"},"🎯 Target: Summer 2027 · 30 min/day · ~192 hours total"));
+  body.appendChild(pd2);
+
+  // Scroll chat to bottom
+  setTimeout(()=>{ chatDiv.scrollTop=chatDiv.scrollHeight; }, 50);
+}
+
+async function sendToTutor(msg, lesson, chatDiv, spinnerEl, inputEl) {
+  if (inputEl) inputEl.value="";
+  // Add user bubble
+  const ub=div({style:{marginBottom:"10px",padding:"10px 13px",borderRadius:"10px",fontSize:"13px",lineHeight:"1.65",
+    background:"#0F2A3A",color:"white",marginLeft:"20px",whiteSpace:"pre-wrap"}});
+  ub.textContent=msg;
+  const welcome=chatDiv.querySelector("div[style*='textAlign']");
+  if(welcome)welcome.remove();
+  chatDiv.appendChild(ub);
+  chatDiv.scrollTop=chatDiv.scrollHeight;
+  spinnerEl.style.display="block";
+  try {
+    const reply = await askTutor(msg, lesson);
+    const ab=div({style:{marginBottom:"10px",padding:"10px 13px",borderRadius:"10px",fontSize:"13px",lineHeight:"1.65",
+      background:"#F4F2ED",color:"#222",marginRight:"20px",whiteSpace:"pre-wrap"}});
+    ab.textContent=reply;
+    chatDiv.appendChild(ab);
+  } catch(e) {
+    const err=div({style:{marginBottom:"10px",padding:"10px 13px",borderRadius:"10px",fontSize:"13px",background:"#FADBD8",color:"#C0392B"}});
+    err.textContent="⚠️ "+e.message+"\n\nCheck internet connection. If persists, the API key may need updating.";
+    chatDiv.appendChild(err);
+  }
+  spinnerEl.style.display="none";
+  chatDiv.scrollTop=chatDiv.scrollHeight;
+}
+
+// ═══════════════════════════════════════════════════════
+// INIT
+// ═══════════════════════════════════════════════════════
+if ('serviceWorker' in navigator) {
+  navigator.serviceWorker.register('/sw.js').catch(()=>{});
+}
+render();
+</script>
+</body>
+</html>
